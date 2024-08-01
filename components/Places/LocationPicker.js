@@ -1,19 +1,19 @@
-import { useEffect, useState } from 'react';
-import { Alert, View, StyleSheet, Image, Text } from 'react-native';
+import { useEffect, useState } from "react";
+import { Alert, View, StyleSheet, Image, Text } from "react-native";
 import {
   getCurrentPositionAsync,
   useForegroundPermissions,
   PermissionStatus,
-} from 'expo-location';
+} from "expo-location";
 import {
   useNavigation,
   useRoute,
   useIsFocused,
-} from '@react-navigation/native';
+} from "@react-navigation/native";
 
-import { Colors } from '../../constants/colors';
-import OutlinedButton from '../UI/OutlinedButton';
-import { getMapPreview } from '../../util/location';
+import { Colors } from "../../constants/colors";
+import OutlinedButton from "../UI/OutlinedButton";
+import { getMapPreview } from "../../util/location";
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState();
@@ -46,8 +46,8 @@ function LocationPicker() {
 
     if (locationPermissionInformation.status === PermissionStatus.DENIED) {
       Alert.alert(
-        'Insufficient Permissions!',
-        'You need to grant location permissions to use this app.'
+        "Insufficient Permissions!",
+        "You need to grant location permissions to use this app."
       );
       return false;
     }
@@ -56,23 +56,28 @@ function LocationPicker() {
   }
 
   async function getLocationHandler() {
-    const hasPermission = await verifyPermissions();
+    try {
+      const hasPermission = await verifyPermissions();
 
-    if (!hasPermission) {
-      return;
+      if (!hasPermission) {
+        return;
+      }
+
+      const location = await getCurrentPositionAsync();
+      setPickedLocation({
+        lat: location.coords.latitude,
+        lng: location.coords.longitude,
+      });
+    } catch (error) {
+      console.log("Error during location selection:", error);
+      Alert.alert("Error", "Could not select a location.");
     }
-
-    const location = await getCurrentPositionAsync();
-    setPickedLocation({
-      lat: location.coords.latitude,
-      lng: location.coords.longitude,
-    });
   }
 
   function pickOnMapHandler() {
-    navigation.navigate('Map');
+    navigation.navigate("Map");
   }
-
+  
   let locationPreview = <Text>No location picked yet.</Text>;
 
   if (pickedLocation) {
@@ -105,23 +110,22 @@ export default LocationPicker;
 
 const styles = StyleSheet.create({
   mapPreview: {
-    width: '100%',
+    width: "100%",
     height: 200,
     marginVertical: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     backgroundColor: Colors.primary100,
     borderRadius: 4,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   actions: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-around",
+    alignItems: "center",
   },
   image: {
-    width: '100%',
-    height: '100%',
-    // borderRadius: 4
+    width: "100%",
+    height: "100%",
   },
 });

@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { Colors } from "../../constants/colors";
 import OutlinedButton from "../UI/OutlinedButton";
 
-function ImagePicker() {
+function ImagePicker({ onTakeImage }) {
   const [pickedImage, setPickedImage] = useState();
   const [cameraPermissionInformation, requestPermission] =
     useCameraPermissions();
@@ -65,6 +65,7 @@ function ImagePicker() {
       // Setting the image URI if the operation wasn't cancelled and a URI exists.
       if (!imageContent.canceled && imageContent.uri) {
         setPickedImage(imageContent.uri);
+        onTakeImage(imageContent.uri);
       } else {
         console.log("Image picking was cancelled or no URI found");
       }
