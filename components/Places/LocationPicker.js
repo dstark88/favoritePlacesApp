@@ -1,23 +1,39 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, View, StyleSheet, Image, Text } from 'react-native';
 import {
   getCurrentPositionAsync,
   useForegroundPermissions,
   PermissionStatus,
 } from 'expo-location';
+import {
+  useNavigation,
+  useRoute,
+  useIsFocused,
+} from '@react-navigation/native';
 
 import { Colors } from '../../constants/colors';
 import OutlinedButton from '../UI/OutlinedButton';
-import { useNavigation } from '@react-navigation/native';
-
 import { getMapPreview } from '../../util/location';
 
 function LocationPicker() {
   const [pickedLocation, setPickedLocation] = useState();
+  const isFocused = useIsFocused();
 
   const navigation = useNavigation();
+  const route = useRoute();
+
   const [locationPermissionInformation, requestPermission] =
     useForegroundPermissions();
+
+  useEffect(() => {
+    if (isFocused && route.params) {
+      const mapPickedLocation = {
+        lat: route.params.pickedLat,
+        lng: route.params.pickedLng,
+      };
+      setPickedLocation(mapPickedLocation);
+    }
+  }, [route, isFocused]);
 
   async function verifyPermissions() {
     if (
@@ -96,7 +112,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.primary100,
     borderRadius: 4,
-    overflow: 'hidden'
+    overflow: 'hidden',
   },
   actions: {
     flexDirection: 'row',
@@ -106,5 +122,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: '100%',
+    // borderRadius: 4
   },
 });
